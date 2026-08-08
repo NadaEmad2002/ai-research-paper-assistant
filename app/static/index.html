@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مساعد الأبحاث الذكي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F7F6F3;
+    --surface: #FFFFFF;
+    --border: #E4E1D9;
+    --ink: #1F2421;
+    --ink-soft: #6B6E68;
+    --accent: #1F6F5C;
+    --accent-soft: #EAF3F0;
+    --accent-line: #C7E0D8;
+    --easy: #2E7D5B;
+    --medium: #A5721E;
+    --hard: #B24B3C;
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(31,36,33,.06), 0 4px 14px rgba(31,36,33,.05);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    line-height: 1.75;
+    font-size: 15px;
+  }
+
+  .wrap{ max-width: 860px; margin: 0 auto; padding: 44px 24px 90px; }
+
+  header.masthead{ margin-bottom: 32px; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  h1{
+    font-size: 30px;
+    font-weight: 700;
+    margin: 8px 0 8px;
+  }
+  header.masthead p{
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 62ch;
+    font-size: 14.5px;
+  }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .dropzone{
+    padding: 34px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+    border: 1.5px dashed var(--border);
+  }
+  .dropzone:hover, .dropzone.drag{ border-color: var(--accent); background: var(--accent-soft); }
+  .dropzone input{ display:none; }
+  .dropzone .icon{ font-size: 24px; margin-bottom: 10px; opacity: .7; }
+  .dropzone .title-line{ font-weight: 600; font-size: 14.5px; }
+  .dropzone .hint{ font-size: 12px; color: var(--ink-soft); margin-top: 8px; font-family:'IBM Plex Mono', monospace; }
+
+  .paper-meta{ display:none; margin-top: 14px; padding: 16px 18px; }
+  .paper-meta.show{ display:block; animation: rise .2s ease; }
+  .paper-meta .title{ font-weight: 600; font-size: 16px; margin: 0 0 6px; }
+  .paper-meta .sections{ font-family:'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--ink-soft); line-height: 1.8; }
+
+  @keyframes rise{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+  .tabs{
+    display:flex;
+    gap: 2px;
+    margin: 26px 0 0;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .tab{
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 11px 14px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .tab.active{ color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .panel{ display:none; padding: 22px 2px 4px; animation: rise .2s ease; }
+  .panel.active{ display:block; }
+
+  button.primary{
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 18px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button.primary:hover{ background: var(--accent); }
+  button.primary:disabled{ opacity:.5; cursor:not-allowed; }
+
+  .result-card{ padding: 18px 20px; margin-top: 16px; }
+  .result-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 10px;
+  }
+  .summary-text{ font-size: 15.5px; line-height: 1.9; }
+
+  /* الكلمات المفتاحية */
+  .keyword-list{ display:flex; flex-wrap: wrap; gap: 8px; }
+  .keyword-chip{
+    display:inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    border: 1px solid var(--accent-line);
+    background: var(--accent-soft);
+  }
+  .keyword-chip .dot{ width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .keyword-chip.topic .dot{ background: var(--accent); }
+  .keyword-chip.method .dot{ background: var(--medium); }
+  .keyword-chip.domain .dot{ background: var(--hard); }
+  .keyword-chip .cat{ font-family:'IBM Plex Mono', monospace; font-size: 10px; color: var(--ink-soft); }
+
+  /* الأسئلة */
+  .q-list{ display:flex; flex-direction: column; gap: 10px; }
+  .q-row{
+    display:flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: var(--accent-soft);
+  }
+  .q-row .badge{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 999px;
+    color: #fff;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .badge.easy{ background: var(--easy); }
+  .badge.medium{ background: var(--medium); }
+  .badge.hard{ background: var(--hard); }
+  .q-row .q-text{ font-size: 14px; }
+
+  /* العنوان */
+  .title-grid{ display:grid; gap: 12px; }
+  .title-box{ padding: 14px 16px; }
+  .title-box .result-label{ margin-bottom: 6px; }
+  .title-box.suggested{ border-color: var(--accent-line); background: var(--accent-soft); }
+  .title-text{ font-size: 16px; font-weight: 500; }
+
+  /* اسألي عن الورقة */
+  .ask-box{ display:flex; gap: 8px; margin-bottom: 16px; }
+  .ask-box input{
+    flex:1;
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+  .ask-box input:focus{ outline: 2px solid var(--accent-line); border-color: var(--accent); }
+  .qa-result .q-asked{ font-weight: 600; font-size: 14.5px; margin-bottom: 10px; }
+  .qa-result .a-text{ font-size: 15px; line-height: 1.85; }
+  .sources-line{ font-family:'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink-soft); margin-top: 12px; }
+
+  .loading{ font-size: 13px; color: var(--ink-soft); margin-top: 14px; }
+  .loading .dot{ animation: blink 1.4s infinite; }
+  .loading .dot:nth-child(2){ animation-delay: .2s; }
+  .loading .dot:nth-child(3){ animation-delay: .4s; }
+  @keyframes blink{ 0%,80%,100%{opacity:.2;} 40%{opacity:1;} }
+
+  .error-box{
+    background:#FBEDEA;
+    border: 1px solid #E9C6BC;
+    color: #8A3626;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-top: 14px;
+  }
+
+  @media (max-width: 600px){
+    .wrap{ padding: 30px 16px 70px; }
+    h1{ font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <span class="eyebrow">AI Research Paper Assistant</span>
+    <h1>مساعد الأبحاث الذكي</h1>
+    <p>ارفعي ورقة بحثية (PDF) واحصلي على ملخص، كلمات مفتاحية، أسئلة مراجعة، وإجابات فورية عن محتواها.</p>
+  </header>
+
+  <div class="card dropzone" id="dropzone">
+    <div class="icon">📄</div>
+    <div class="title-line" id="dzText">اسحبي ملف PDF هنا، أو اضغطي لاختياره</div>
+    <div class="hint">MAX_UPLOAD_SIZE_MB يحدد الحجم الأقصى من إعدادات السيرفر</div>
+    <input type="file" id="fileInput" accept="application/pdf">
+  </div>
+
+  <div class="card paper-meta" id="paperMeta">
+    <p class="title" id="paperTitle"></p>
+    <div class="sections" id="paperSections"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="summary" disabled>الملخص</button>
+    <button class="tab" data-tab="keywords" disabled>الكلمات المفتاحية</button>
+    <button class="tab" data-tab="questions" disabled>أسئلة مقترحة</button>
+    <button class="tab" data-tab="title" disabled>العنوان</button>
+    <button class="tab" data-tab="ask" disabled>اسألي عن الورقة</button>
+  </div>
+
+  <div class="panel active" data-panel="summary">
+    <button class="primary" onclick="loadSummary()">توليد الملخص</button>
+    <div id="summaryOut"></div>
+  </div>
+
+  <div class="panel" data-panel="keywords">
+    <button class="primary" onclick="loadKeywords()">استخراج الكلمات المفتاحية</button>
+    <div id="keywordsOut"></div>
+  </div>
+
+  <div class="panel" data-panel="questions">
+    <button class="primary" onclick="loadQuestions()">توليد أسئلة</button>
+    <div id="questionsOut"></div>
+  </div>
+
+  <div class="panel" data-panel="title">
+    <button class="primary" onclick="loadTitle()">اقتراح عنوان</button>
+    <div id="titleOut"></div>
+  </div>
+
+  <div class="panel" data-panel="ask">
+    <div class="ask-box">
+      <input type="text" id="askInput" placeholder="مثال: إيه المنهجية المستخدمة في الورقة؟">
+      <button class="primary" onclick="askQuestion()">اسألي</button>
+    </div>
+    <div id="askOut"></div>
+  </div>
+</div>
+
+<script>
+const API_BASE = '';
+let paperId = null;
+
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const dzText = document.getElementById('dzText');
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag');
+  if (e.dataTransfer.files.length) uploadFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) uploadFile(fileInput.files[0]);
+});
+
+async function uploadFile(file) {
+  dzText.textContent = `جاري رفع "${file.name}"...`;
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const res = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'فشل الرفع');
+
+    paperId = data.paper_id;
+    dzText.textContent = `تم رفع "${file.name}" ✓`;
+
+    document.getElementById('paperMeta').classList.add('show');
+    document.getElementById('paperTitle').textContent = data.title_guess || '(بدون عنوان مستخرج)';
+    document.getElementById('paperSections').textContent = `${data.page_count} صفحة · الأقسام: ${data.sections.join(' / ')}`;
+
+    document.querySelectorAll('.tab').forEach(t => t.disabled = false);
+  } catch (err) {
+    dzText.textContent = `خطأ: ${err.message}`;
+  }
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelector(`.panel[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+  });
+});
+
+function showLoading(elId, label) {
+  document.getElementById(elId).innerHTML =
+    `<div class="loading">${label}<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>`;
+}
+function showError(elId, msg) {
+  document.getElementById(elId).innerHTML = `<div class="error-box">${msg}</div>`;
+}
+
+async function loadSummary() {
+  showLoading('summaryOut', 'جاري قراءة الورقة وتلخيصها');
+  try {
+    const res = await fetch(`${API_BASE}/summarize/${paperId}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+    document.getElementById('summaryOut').innerHTML = `
+      <div class="card result-card">
+        <span class="result-label">ملخص عام</span>
+        <div class="summary-text">${data.summary}</div>
+      </div>`;
+  } catch (err) {
+    showError('summaryOut', err.message);
+  }
+}
+
+async function loadKeywords() {
+  showLoading('keywordsOut', 'جاري استخراج المصطلحات');
+  try {
+    const res = await fetch(`${API_BASE}/keywords/${paperId}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+    const catLabel = { topic: 'موضوع', method: 'طريقة', domain: 'مجال' };
+    const html = data.keywords.map(k => `
+      <span class="keyword-chip ${k.category}">
+        <span class="dot"></span>${k.term}<span class="cat">${catLabel[k.category] || k.category}</span>
+      </span>`).join('');
+    document.getElementById('keywordsOut').innerHTML = `
+      <div class="card result-card">
+        <span class="result-label">كلمات مفتاحية</span>
+        <div class="keyword-list">${html}</div>
+      </div>`;
+  } catch (err) {
+    showError('keywordsOut', err.message);
+  }
+}
+
+async function loadQuestions() {
+  showLoading('questionsOut', 'جاري صياغة أسئلة المراجعة');
+  try {
+    const res = await fetch(`${API_BASE}/questions/${paperId}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+    const diffLabel = { easy: 'سهل', medium: 'متوسط', hard: 'صعب' };
+    const html = data.questions.map(q => `
+      <div class="q-row">
+        <span class="badge ${q.difficulty}">${diffLabel[q.difficulty] || q.difficulty}</span>
+        <div class="q-text">${q.question}</div>
+      </div>`).join('');
+    document.getElementById('questionsOut').innerHTML = `
+      <div class="card result-card">
+        <span class="result-label">أسئلة مقترحة</span>
+        <div class="q-list">${html}</div>
+      </div>`;
+  } catch (err) {
+    showError('questionsOut', err.message);
+  }
+}
+
+async function loadTitle() {
+  showLoading('titleOut', 'جاري صياغة عنوان مقترح');
+  try {
+    const res = await fetch(`${API_BASE}/title/${paperId}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+    document.getElementById('titleOut').innerHTML = `
+      <div class="title-grid">
+        <div class="card title-box">
+          <span class="result-label">العنوان المستخرج من الملف</span>
+          <div class="title-text">${data.extracted_title || '—'}</div>
+        </div>
+        <div class="card title-box suggested">
+          <span class="result-label">العنوان المقترح من Gemini</span>
+          <div class="title-text">${data.suggested_title}</div>
+        </div>
+      </div>`;
+  } catch (err) {
+    showError('titleOut', err.message);
+  }
+}
+
+async function askQuestion() {
+  const question = document.getElementById('askInput').value.trim();
+  if (!question) return;
+  showLoading('askOut', 'جاري البحث في الورقة');
+  try {
+    const res = await fetch(`${API_BASE}/ask`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paper_id: paperId, question }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+    document.getElementById('askOut').innerHTML = `
+      <div class="card result-card qa-result">
+        <div class="q-asked">${question}</div>
+        <div class="a-text">${data.answer}</div>
+        <div class="sources-line">مصادر: ${data.sources.join(', ') || '—'}</div>
+      </div>`;
+  } catch (err) {
+    showError('askOut', err.message);
+  }
+}
+</script>
+
+</body>
+</html>

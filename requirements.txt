@@ -1,0 +1,27 @@
+# ملاحظة: الحدود هنا دنيا (>=) مش نسخ مثبتة بالظبط، لأن Python 3.14 حديث
+# ومكتبات كتير (pymupdf, scikit-learn, pydantic) لسه بتضيف دعم ليه. تحديد
+# نسخة قديمة بالظبط ممكن يخلي pip يحاول يبني المكتبة من الكود المصدري
+# (ويطلب Visual Studio على ويندوز). الحدود الدنيا هنا كلها نسخ بتوفر
+# wheels جاهزة لـ Python 3.10 وحتى 3.14.
+
+# Web framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.6
+python-multipart>=0.0.9
+pydantic>=2.12.0
+
+# PDF processing
+pymupdf>=1.26.0
+
+# Retrieval (TF-IDF) للـ Q&A
+scikit-learn>=1.7.2
+numpy>=2.1.0
+
+# Google Gemini API (مجاني بدون بطاقة عبر Google AI Studio)
+google-genai>=1.2.0
+
+# إدارة الإعدادات
+python-dotenv>=1.0.1
+
+# اختبارات (dev)
+pytest>=8.3.2
