@@ -1,3 +1,9 @@
+
+
+https://github.com/user-attachments/assets/68034322-861a-4bd8-b32e-72f6f73861ca
+
+
+
 # AI Research Paper Assistant
 
 An AI-powered tool that turns a research paper (PDF) into a structured, explorable summary: overall and per-section summaries, classified keywords, review questions, a suggested title, and grounded question-answering over the paper's own content.
